@@ -1,0 +1,72 @@
+body {
+    font-family: 'Arial', sans-serif;
+    padding-top: 56px; /* Adjust this value based on your navbar height */
+}
+.hero-section {
+    background: linear-gradient(135deg, #FF6B6B, #4ECDC4);
+    color: white;
+    padding: 150px 0;
+    clip-path: polygon(0 0, 100% 0, 100% 85%, 0% 100%);
+}
+.feature-card {
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+.feature-card:hover {
+    transform: translateY(-10px);
+}
+.testimonial-card {
+    background-color: #f8f9fa;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+.cta-section {
+    background-color: #4ECDC4;
+    color: white;
+    padding: 100px 0;
+    clip-path: polygon(0 15%, 100% 0, 100% 85%, 0% 100%);
+}
+.social-icons a {
+    color: white;
+    font-size: 24px;
+    margin: 0 10px;
+}
+.scroll-container {
+    overflow-x: auto;
+    white-space: nowrap;
+    padding: 20px 0;
+    -webkit-overflow-scrolling: touch;
+}
+.scroll-container::-webkit-scrollbar {
+    display: none;
+}
+.scroll-item {
+    display: inline-block;
+    width: 300px;
+    margin-right: 20px;
+    vertical-align: top;
+    white-space: normal;
+}
+.scroll-item:last-child {
+    margin-right: 0;
+}
+.animate-on-scroll {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s, transform 0.5s;
+}
+.animate-on-scroll.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+section {
+    padding-top: 80px; /* Increased top padding */
+    margin-top: -56px; /* Negative margin to offset the body padding-top */
+    padding-bottom: 80px; /* Added bottom padding for consistency */
+}
+.section-padding:nth-child(even) {
+    background-color: #f8f9fa;
+}

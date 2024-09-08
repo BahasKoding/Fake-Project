@@ -1,0 +1,126 @@
+:root {
+    --primary-color: #4a6fdc;
+    --secondary-color: #f39c12;
+    --background-color: #f4f6f9;
+    --text-color: #2c3e50;
+    --sidebar-bg: #34495e;
+    --sidebar-text: #ecf0f1;
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+.bg-gradient-primary {
+    background-color: var(--sidebar-bg);
+    background-image: none;
+}
+
+.sidebar-dark .nav-item .nav-link {
+    color: var(--sidebar-text);
+}
+
+.sidebar-dark .sidebar-brand {
+    color: var(--secondary-color);
+}
+
+.sidebar-dark .sidebar-heading {
+    color: rgba(255,255,255,.4);
+}
+
+.topbar {
+    background-color: #fff;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+}
+
+.card {
+    border: none;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+}
+
+.card-header {
+    background-color: #fff;
+    border-bottom: 1px solid #e3e6f0;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+    background-color: darken(var(--primary-color), 10%);
+    border-color: darken(var(--primary-color), 10%);
+}
+
+.page-item.active .page-link {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.progress-bar {
+    background-color: var(--primary-color);
+}
+
+/* Logout Modal Styles */
+#logoutModal .modal-content {
+    border: none;
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+#logoutModal .modal-header {
+    border-bottom: none;
+    padding: 1.5rem;
+}
+
+#logoutModal .modal-title {
+    font-weight: 600;
+}
+
+#logoutModal .modal-body {
+    padding: 1.5rem;
+    text-align: center;
+}
+
+#logoutModal .modal-footer {
+    border-top: none;
+    justify-content: center;
+    padding: 1.5rem;
+}
+
+#logoutModal .btn {
+    padding: 0.5rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+#logoutModal .btn-secondary {
+    background-color: #e0e0e0;
+    color: #333;
+    border: none;
+}
+
+#logoutModal .btn-secondary:hover {
+    background-color: #d0d0d0;
+}
+
+#logoutModal .btn-primary {
+    background-color: var(--primary-color);
+    border: none;
+}
+
+#logoutModal .btn-primary:hover {
+    background-color: darken(var(--primary-color), 10%);
+}
+
+#logoutModal .close {
+    opacity: 1;
+    text-shadow: none;
+}
+
+#logoutModal .close:hover {
+    color: #f8f9fa;
+}

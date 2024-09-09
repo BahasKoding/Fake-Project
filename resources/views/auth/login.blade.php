@@ -37,21 +37,11 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            @if($errors->any())
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: '{{ $errors->first() }}',
-                    confirmButtonColor: '#3498db'
-                });
-            @endif
-
             @if(session('error'))
                 Swal.fire({
                     icon: 'error',
                     title: 'Oops...',
                     text: '{{ session('error') }}',
-                    confirmButtonColor: '#3498db'
                 });
             @endif
 
@@ -60,7 +50,6 @@
                     icon: 'success',
                     title: 'Berhasil!',
                     text: '{{ session('success') }}',
-                    confirmButtonColor: '#3498db'
                 });
             @endif
         });

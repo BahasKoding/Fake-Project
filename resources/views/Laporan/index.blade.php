@@ -1,134 +1,122 @@
-@extends('layout.main')
-@section('content')
+@extends('layouts.admin')
 
+@section('title', 'Laporan')
+
+@section('styles')
 <style>
-    .main-content {
-        margin-top: 0rem; /* Top margin */
-        margin-bottom: 10rem; /* Bottom margin */
-        margin-left: 0; /* No left margin */
-        margin-right: 0; /* No right margin */
+    .btn-primary:hover {
+        background-color: #4e73df !important;
+        border-color: #4e73df !important;
     }
 </style>
+@endsection
 
-<div class="container mt-3">
+@section('content')
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Laporan</h1>
+    </div>
+
+    <!-- Filter Card -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Filter Laporan</h6>
+        </div>
+        <div class="card-body">
+            <form id="filterForm" action="{{ route('Laporan.index') }}" method="GET">
+                <div class="row align-items-end">
+                    <div class="col-md-3 mb-3">
+                        <label for="from_date" class="form-label">Dari Tanggal</label>
+                        <input class="form-control" type="date" id="from_date" name="from_date" value="{{ request('from_date') }}">
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="to_date" class="form-label">Sampai Tanggal</label>
+                        <input class="form-control" type="date" id="to_date" name="to_date" value="{{ request('to_date') }}">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-primary me-2">
+                                <i class="fas fa-filter"></i> Filter
+                            </button>
+                            <a href="{{ route('Laporan.index') }}" class="btn btn-secondary me-2">
+                                <i class="fas fa-sync-alt"></i> Reset
+                            </a>
+                            @if(Auth::user()->role == 'Mentri-Sosial')
+                                <button type="button" class="btn btn-info me-2" onclick="downloadPdf()">
+                                    <i class="fas fa-file-pdf"></i> Download PDF
+                                </button>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Content Row -->
     <div class="row">
-        <div class="col"></div>
-        <div class="col-3 fs-6 text-end">From Date</div>
-        <div class="col-3">
-            <input class="form-control" type="date" id="from_date">
-        </div>
-        <div class="col-1 fs-6 text-end">To Date</div>
-        <div class="col-3">
-            <input class="form-control" type="date" id="to_date">
-        </div>
-        <div class="col-1">
-            <button class="btn btn-primary" onclick="filterData()">Filter</button>
+        <div class="col-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Daftar Laporan</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>ID Laporan</th>
+                                    <th>Tanggal Laporan</th>
+                                    <th>ID Monitoring</th>
+                                    <th>Jumlah Bantuan</th>
+                                    <th>Status Bantuan</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($pendataan as $p)
+                                    @php
+                                        $monitoring = $p->monitoring->first();
+                                    @endphp
+                                    <tr>
+                                        <td>{{ $monitoring ? $monitoring->formatLaporan() : '-' }}</td>
+                                        <td>{{ $monitoring && $monitoring->created_at ? $monitoring->created_at->format('d/m/Y') : '-' }}</td>
+                                        <td>{{ $p->formatMonitoring() }}</td>
+                                        <td>{{ $monitoring && $monitoring->Jumlah_bantuan !== null ? 'Rp ' . number_format($monitoring->Jumlah_bantuan, 0, ',', '.') : '-' }}</td>
+                                        <td>{{ $p->status == 1 ? 'Diterima' : '-' }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-</div>
+@endsection
 
-<div class="table-responsive mt-3">
-    <table class="table table-striped table-sm">
-        <thead>
-        <tr class="text-center">
-            <th scope="col">ID Laporan</th>
-            <th scope="col">Tanggal Laporan</th>
-            <th scope="col">ID Monitoring</th>
-            <th scope="col">Jumlah Bantuan</th>
-            <th scope="col">Status Bantuan</th>
-        </tr>
-        </thead>
-        <tbody>
-            @foreach ($pendataan as $p)
-                @php
-                    $monitoring = $p->monitoring->first();
-                @endphp
-                <tr class="text-center">
-                    <td>
-                        {{ $monitoring->formatLaporan() }}
-                    </td>
-                    <td>
-                        @if($monitoring && $monitoring->created_at)
-                            {{ $monitoring->created_at->format('d/m/Y') }}
-                        @else
-                            -
-                        @endif
-                    </td>
-                    <td>
-                        {{ $p->formatMonitoring() }}
-                    </td>
-                    <td>
-                        @if($monitoring && $monitoring->Jumlah_bantuan !== null)
-                            Rp {{ number_format($monitoring->Jumlah_bantuan, 0, ',', '.') }}
-                        @else
-                            -
-                        @endif
-                    </td>
-                    <td>
-                        @if($p->status == 1)
-                            diterima
-                        @endif
-                    </td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
-</div>
-
-<div class="row mb-5 mt-2">
-    @if(Auth::user()->role == 'UPT')
-    <div class="d-none">
-        <div class="col"></div>
-        <div class="col-1"><button class="btn btn-secondary">Edit</button></div>
-        <div class="col-1"><button class="btn btn-secondary">Simpan</button></div>
-        <div class="col-2 text-start"><button class="btn btn-danger">Kirim</button></div>
-    </div>
-    @elseif(Auth::user()->role == 'Mentri-Sosial')
-        <div class="col"></div>
-        <div class="col-2">
-            <button class="btn btn-secondary" onclick="downloadPdf()">Download PDF</button>
-        </div>
-        <div class="col-1 text-start"><button class="btn btn-danger">Kembali</button></div>
-    @endif
-</div>
-<div class="main-content"></div>
-<script>
-    function filterData() {
-        const fromDate = document.getElementById('from_date').value;
-        const toDate = document.getElementById('to_date').value;
-
-        const rows = document.querySelectorAll('.table tbody tr');
-
-        rows.forEach(row => {
-            const dateCell = row.cells[1].innerText;
-            const rowDate = new Date(dateCell.split('/').reverse().join('/'));
-
-            if (dateCell !== '-' && fromDate && toDate) {
-                const from = new Date(fromDate);
-                const to = new Date(toDate);
-
-                if (rowDate >= from && rowDate <= to) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            } else {
-                row.style.display = '';
-            }
+@section('scripts')
+    <script src="{{ asset('vendor/datatables/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('vendor/datatables/dataTables.bootstrap4.min.js') }}"></script>
+    <script>
+        $(document).ready(function() {
+            $('#dataTable').DataTable();
         });
-    }
 
-    function downloadPdf() {
-        const fromDate = document.getElementById('from_date').value;
-        const toDate = document.getElementById('to_date').value;
+        function downloadPdf() {
+            const fromDate = document.getElementById('from_date').value;
+            const toDate = document.getElementById('to_date').value;
 
-        let url = '/download-pdf';
-        if (fromDate && toDate) {
-            url += `?from_date=${encodeURIComponent(fromDate)}&to_date=${encodeURIComponent(toDate)}`;
+            let url = '{{ route("laporan.downloadPdf") }}';
+            const params = new URLSearchParams();
+
+            if (fromDate) params.append('from_date', fromDate);
+            if (toDate) params.append('to_date', toDate);
+
+            if (params.toString()) {
+                url += '?' + params.toString();
+            }
+
+            window.location.href = url;
         }
-
-        window.location.href = url;
-    }
-</script>
-
+    </script>
 @endsection

@@ -77,7 +77,7 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form id="addForm">
+                <form id="addForm" enctype="multipart/form-data">
                     <div class="modal-body">
                         @csrf
                         <div class="form-group">
@@ -108,7 +108,7 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form id="editForm">
+                <form id="editForm" enctype="multipart/form-data">
                     <div class="modal-body">
                         @csrf
                         @method('PUT')
@@ -161,24 +161,49 @@
                         Swal.fire({
                             icon: 'success',
                             title: 'Berhasil!',
-                            text: response.message
-                        }).then(() => {
-                            location.reload();
+                            text: response.message,
+                        }).then((result) => {
+                            if (result.isConfirmed || result.isDismissed) {
+                                addNewRow(response.data);
+                                $('#addForm')[0].reset();
+                            }
                         });
                     },
                     error: function(xhr) {
-                        var errorMessage = 'Terjadi kesalahan. Silakan coba lagi.';
-                        if (xhr.responseJSON && xhr.responseJSON.error) {
-                            errorMessage = xhr.responseJSON.error;
-                        }
                         Swal.fire({
                             icon: 'error',
                             title: 'Oops...',
-                            text: errorMessage
+                            text: xhr.responseJSON?.error || 'Terjadi kesalahan. Silakan coba lagi.',
                         });
                     }
                 });
             });
+
+            // Fungsi untuk menambah baris baru ke tabel
+            function addNewRow(data) {
+                var newRow = `
+                    <tr>
+                        <td>${data.judul_kegiatan}</td>
+                        <td>
+                            ${data.file ? `<a href="${data.file_url}" target="_blank">Lihat File</a>` : '-'}
+                        </td>
+                        ${userRole === 'Unit-Kerja' ? `
+                            <td>
+                                <button class="btn btn-sm btn-info edit-btn" data-id="${data.id}">Edit</button>
+                                <button class="btn btn-sm btn-danger delete-btn" data-id="${data.id}">Hapus</button>
+                            </td>
+                        ` : ''}
+                    </tr>
+                `;
+
+                // Tambahkan baris baru ke awal tabel
+                $('#dataTable tbody').prepend(newRow);
+
+                // Jika menggunakan DataTables, perbarui data
+                if ($.fn.DataTable.isDataTable('#dataTable')) {
+                    $('#dataTable').DataTable().row.add($(newRow)).draw(false);
+                }
+            }
 
             // Edit button click
             $(document).on('click', '.edit-btn', function() {
@@ -203,14 +228,10 @@
                         $('#editModal').modal('show');
                     },
                     error: function(xhr) {
-                        var errorMessage = 'Terjadi kesalahan. Silakan coba lagi.';
-                        if (xhr.responseJSON && xhr.responseJSON.error) {
-                            errorMessage = xhr.responseJSON.error;
-                        }
                         Swal.fire({
                             icon: 'error',
                             title: 'Oops...',
-                            text: errorMessage
+                            text: xhr.responseJSON?.error || 'Terjadi kesalahan. Silakan coba lagi.',
                         });
                     }
                 });
@@ -222,11 +243,14 @@
                 var formData = new FormData(this);
                 var id = $('#editId').val();
                 $.ajax({
-                    url: "{{ url('pengumuman') }}/" + id,
+                    url: "{{ route('pengumuman.update', '') }}/" + id,
                     type: 'POST',
                     data: formData,
                     processData: false,
                     contentType: false,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
                     success: function(response) {
                         $('#editModal').modal('hide');
                         Swal.fire({
@@ -238,14 +262,10 @@
                         });
                     },
                     error: function(xhr) {
-                        var errorMessage = 'Terjadi kesalahan. Silakan coba lagi.';
-                        if (xhr.responseJSON && xhr.responseJSON.error) {
-                            errorMessage = xhr.responseJSON.error;
-                        }
                         Swal.fire({
                             icon: 'error',
                             title: 'Oops...',
-                            text: errorMessage
+                            text: xhr.responseJSON?.error || 'Terjadi kesalahan. Silakan coba lagi.',
                         });
                     }
                 });
@@ -280,14 +300,10 @@
                                 });
                             },
                             error: function(xhr) {
-                                var errorMessage = 'Terjadi kesalahan. Silakan coba lagi.';
-                                if (xhr.responseJSON && xhr.responseJSON.error) {
-                                    errorMessage = xhr.responseJSON.error;
-                                }
                                 Swal.fire({
                                     icon: 'error',
                                     title: 'Oops...',
-                                    text: errorMessage
+                                    text: xhr.responseJSON?.error || 'Terjadi kesalahan. Silakan coba lagi.',
                                 });
                             }
                         });

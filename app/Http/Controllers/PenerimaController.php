@@ -9,76 +9,36 @@ use Illuminate\Support\Facades\Auth;
 
 class PenerimaController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        return view('Penerima.index',[
-            'pendataan' => Pendataan::all()
-        ]);
+        $pendataan = Pendataan::all();
+        return view('Penerima.index', compact('pendataan'));
     }
-    
+
     public function bulkUpdate(Request $request)
     {
         $ids = $request->input('ids', []);
         $action = $request->input('action');
 
         if (!in_array($action, ['terima', 'tolak'])) {
-            return redirect()->back()->with('error', 'Aksi tidak valid.');
+            return response()->json(['error' => 'Aksi tidak valid.'], 400);
         }
 
         $status = ($action == 'terima') ? 1 : 2;
 
-        Pendataan::whereIn('id', $ids)->update(['status' => $status]);
-
-        return redirect()->back()->with('success', 'Data berhasil diperbarui.');
-    }
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        try {
+            Pendataan::whereIn('id', $ids)->update(['status' => $status]);
+            return response()->json(['message' => 'Data berhasil diperbarui.'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Terjadi kesalahan: ' . $e->getMessage()], 500);
+        }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    // Tambahkan method search jika diperlukan
+    public function search(Request $request)
     {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Penerima $penerima)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Penerima $penerima)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Penerima $penerima)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Penerima $penerima)
-    {
-        //
+        $query = $request->input('query');
+        $pendataan = Pendataan::where('nama_lengkap', 'LIKE', "%{$query}%")->get();
+        return response()->json($pendataan);
     }
 }

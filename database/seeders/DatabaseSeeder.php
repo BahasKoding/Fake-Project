@@ -27,6 +27,9 @@ class DatabaseSeeder extends Seeder
                 'role'      => 'Warga'
             ]);
         }
+        $this->call([
+            PendataanMonitoringSeeder::class,
+        ]);
 
         User::create([
             'name'      => 'Unit Kerja',

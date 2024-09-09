@@ -14,7 +14,7 @@ class LoginController extends Controller
         return view('auth.login');
     }
 
-    public function auth(Request $request)
+    public function login(Request $request)
     {
         try {
             $request->validate([
@@ -25,16 +25,11 @@ class LoginController extends Controller
             $credentials = $request->only('username', 'password');
 
             if (Auth::attempt($credentials)) {
-                $user = Auth::user();
                 $request->session()->regenerate();
-
-                return redirect()->intended('/dashboard')->with('success', 'Selamat datang, ' . $user->name . '!');
+                return redirect()->intended('dashboard')->with('success', 'Anda telah berhasil login.');
             }
 
-            throw ValidationException::withMessages([
-                'username' => ['Kredensial yang diberikan tidak cocok dengan catatan kami.'],
-            ]);
-
+            return back()->with('error', 'Username atau password salah.');
         } catch (ValidationException $e) {
             return back()->withErrors($e->errors())->withInput($request->except('password'));
         }
@@ -47,6 +42,6 @@ class LoginController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/')->with('success', 'Anda telah berhasil keluar.');
+        return redirect('/')->with('success', 'Anda telah berhasil keluar dari sistem.');
     }
 }

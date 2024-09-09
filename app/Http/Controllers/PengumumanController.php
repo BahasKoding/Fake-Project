@@ -37,13 +37,21 @@ class PengumumanController extends Controller
                 $data['file'] = $request->file('file')->store('files', 'public');
             }
 
-            Pengumuman::create($data);
+            $pengumuman = Pengumuman::create($data);
 
-            return response()->json(['message' => 'Pengumuman berhasil ditambahkan'], 200);
-        } catch (QueryException $e) {
-            return response()->json(['error' => 'Database error: ' . $e->getMessage()], 500);
+            return response()->json([
+                'message' => 'Pengumuman berhasil ditambahkan',
+                'data' => [
+                    'id' => $pengumuman->id,
+                    'judul_kegiatan' => $pengumuman->judul_kegiatan,
+                    'file' => $pengumuman->file,
+                    'file_url' => $pengumuman->file ? asset('storage/' . $pengumuman->file) : null,
+                ]
+            ], 200);
+        } catch (ValidationException $e) {
+            return response()->json(['error' => $e->errors()], 422);
         } catch (Exception $e) {
-            return response()->json(['error' => 'An error occurred: ' . $e->getMessage()], 500);
+            return response()->json(['error' => 'Terjadi kesalahan: ' . $e->getMessage()], 500);
         }
     }
 
